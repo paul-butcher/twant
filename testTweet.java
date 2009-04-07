@@ -24,4 +24,11 @@ public class testTweet extends TestCase {
 		t.addText("Hello, Sailor!");
 		assertEquals("http://twitter.com/statuses/update.xml?status=Hello%2C+Sailor%21", t.getURL());
 	}
+	
+	public void testGetEncodedCredentials(){
+		Tweet t = new Tweet();
+		t.setUser("someUser");
+		t.setPass("passWord123");
+		assertEquals("c29tZVVzZXI6cGFzc1dvcmQxMjM=",t.getEncodedCredentials());
+	}
 }
