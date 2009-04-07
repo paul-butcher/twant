@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.1
+Created-By: 0.99.3+hg (CACAOVM - Verein zur Foerderung der freien virt
+ uellen Maschine CACAO)
+Main-Class: Tweet
+ 
+

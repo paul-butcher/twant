@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Twant" basedir="." default="jar">
+
+    <property name="src.dir" value="."/>
+    <property name="testclasses.dir" value="testclasses"/>
+    <property name="classes.dir" value="classes"/>
+    <property name="reports.dir" value="reports"/>
+
+
+    <target name="clean" description="Delete all generated files">
+		<echo>Cleaning...</echo>
+    	<delete dir="${classes.dir}" failonerror="false"/>
+    	<delete dir="${testclasses.dir}" failonerror="false"/>
+    	<delete dir="${reports.dir}" failonerror="false"/>
+        <delete file="${ant.project.name}.jar"/>
+    </target>
+	<target name="lint">
+	</target>
+    <target name="compile" description="Compiles the Task" >
+		<echo>Compiling...</echo>
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="test*.java">
+        </javac>
+    </target>
+	
+	<target name="unit-test" depends="compile">
+		<echo>Compiling Tests...</echo>
+        <mkdir dir="${testclasses.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${testclasses.dir}" includes="test*.java" />
+		<echo>Running Unit tests...</echo>
+        <mkdir dir="${reports.dir}"/>
+	    <junit  printsummary="yes" showoutput="yes" haltonfailure="yes">
+			<classpath>
+				<pathelement path="${classes.dir}"/>
+				<pathelement path="${testclasses.dir}"/>
+			</classpath>
+			<batchtest fork="yes" todir="${reports.dir}/">
+				<formatter type="xml"/>
+				<fileset dir="${src.dir}">
+				<include name="**/test*.java"/>
+				</fileset>
+			</batchtest>
+	    </junit>
+	</target>
+	
+    <target name="jar" description="JARs the Task" depends="unit-test">
+		<echo>Jarring...</echo>
+        <jar destfile="${ant.project.name}.jar" manifest="MANIFEST.MF" basedir="${classes.dir}"/>
+    </target>
+	
+	
+    <target name="end-to-end-test" description="tests the jar" depends="jar">
+		<taskdef name="tweet" classname="Tweet" classpath="${ant.project.name}.jar"/>
+		<tweet>Hello Sailor</tweet>
+	</target>
+
+
+</project>
