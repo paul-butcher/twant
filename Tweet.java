@@ -1,3 +1,32 @@
+/*	
+ * Tweet.java, an ANT task that posts updates to tweet.
+ * 
+ * Copyright (c) 2009 Paul Butcher
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Paul Butcher nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY Paul Butcher ''AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL Paul Butcher BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -25,13 +54,12 @@ import org.apache.commons.codec.binary.Base64;
  *  {@code <tweet credentialsFile="myTwitterDetails">hello world</tweet>}
  */
 public class Tweet  extends Task {
-	private String statusText; 
+	private String statusText = ""; 
 	private String username = ""; 
 	private String password = "";
 	private String credentials ="";
 
 	/**
-	 *
 	 * Override of org.apache.tools.ant.Task::execute, posts the message defined by this instance to Twitter.
 	 * Echos the HTTP response code and message.
 	 */
@@ -56,7 +84,9 @@ public class Tweet  extends Task {
 	 * @param text a String representing the content of the tweet to be posted.
 	 */
 	public void addText(String text) {
-		statusText = text;
+		if(statusText.isEmpty()){
+			statusText = text;
+		}
 	}
 	
 	/**
@@ -90,6 +120,14 @@ public class Tweet  extends Task {
 		credentials = r.readLine();
 	}
 	
+	/**
+	 * Sets the value of the message to be used to update the authenticated user's Twitter status.
+	 * setMessage takes precedence over {@link addText}
+	 * @param message a String corresponding to the message. 
+	 */
+	public void setMessage(String message) {
+		statusText = message; 
+	}
 	/**
 	 * Returns the URL to use to update the authenticated user's Twitter status with the text
 	 * provided in addText.
@@ -132,7 +170,6 @@ public class Tweet  extends Task {
 	 */
 	private void addAuthorisationHeader(HttpURLConnection http) {
 	    String encodedCredential = getEncodedCredentials();
-	    System.out.println(encodedCredential);
 	    http.setRequestProperty("Authorization", "Basic " +  encodedCredential);
 	}
 }

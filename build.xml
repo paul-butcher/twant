@@ -5,6 +5,10 @@
     <property name="testclasses.dir" value="testclasses"/>
     <property name="classes.dir" value="classes"/>
     <property name="reports.dir" value="reports"/>
+	<tstamp>
+	   <format property="start.timestamp" pattern="dd-MMM-yyyy HH:mm:ss" />
+	</tstamp>
+	<taskdef name="tweet" classname="Tweet" classpath="${ant.project.name}.jar"/>
 	
     <target name="clean" description="Delete all generated files">
 		<echo>Cleaning...</echo>
@@ -31,7 +35,7 @@
         <javac srcdir="${src.dir}" destdir="${testclasses.dir}" includes="test*.java" />
 		<echo>Running Unit tests...</echo>
         <mkdir dir="${reports.dir}"/>
-	    <junit  printsummary="yes" showoutput="yes" haltonfailure="yes">
+	    <junit  printsummary="yes" showoutput="yes" failureproperty="test.failed">
 			<classpath>
 				<pathelement path="${classes.dir}"/>
 				<pathelement path="${testclasses.dir}"/>
@@ -43,17 +47,22 @@
 				</fileset>
 			</batchtest>
 	    </junit>
+		<antcall target="broadcast-failure" />
+		<fail if="test.failed">Unit tests failed</fail>
 	</target>
-	
+
+	<target name="broadcast-failure" if="test.failed">
+		<tweet credentialsfile="twitterlogin" message="build of ${ant.project.name} initiated by ${user.name} at ${start.timestamp} failed unit tests" />            
+    </target>
+
     <target name="jar" description="JARs Twant" depends="unit-test">
 		<echo>Jarring...</echo>
         <jar destfile="${ant.project.name}.jar" manifest="MANIFEST.MF" basedir="${classes.dir}"/>
     </target>
 	
 	
-    <target name="end-to-end-test" description="tests the jar" depends="jar">
-		<taskdef name="tweet" classname="Tweet" classpath="${ant.project.name}.jar"/>
-		<tweet credentialsfile="twitterlogin">Hello Sailor</tweet>
+    <target name="broadcast-result" description="tweets about it" depends="jar">
+		<tweet credentialsfile="twitterlogin" message="build of ${ant.project.name} initiated by ${user.name} at ${start.timestamp} was successful" />
 	</target>
 
 

@@ -31,4 +31,17 @@ public class testTweet extends TestCase {
 		t.setPass("passWord123");
 		assertEquals("c29tZVVzZXI6cGFzc1dvcmQxMjM=",t.getEncodedCredentials());
 	}
+
+	public void testgetURLWithMessageAttribute() {
+		Tweet t = new Tweet();
+		t.setMessage("Hello Dolly");
+		assertEquals("http://twitter.com/statuses/update.xml?status=Hello+Dolly", t.getURL());
+	}
+
+	public void testgetURLWithMessageAttributeAndContent() {
+		Tweet t = new Tweet();
+		t.setMessage("Hello Dolly");
+		t.addText("Hello Sailor");
+		assertEquals("http://twitter.com/statuses/update.xml?status=Hello+Dolly", t.getURL());
+	}
 }
