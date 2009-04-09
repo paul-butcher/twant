@@ -5,6 +5,8 @@
     <property name="testclasses.dir" value="testclasses"/>
     <property name="classes.dir" value="classes"/>
     <property name="reports.dir" value="reports"/>
+	<property name="version.num" value="1.00"/>
+	<buildnumber file="build.num"/>
 	<tstamp>
 	   <format property="start.timestamp" pattern="dd-MMM-yyyy HH:mm:ss" />
 	</tstamp>
@@ -52,18 +54,22 @@
 
 	<target name="broadcast-failure" if="test.failed">
 		<taskdef name="tweet" classname="twant.Tweet" classpath="${ant.project.name}.jar"/>
-		<tweet credentialsfile="twitterlogin" message="build of ${ant.project.name} initiated by ${user.name} at ${start.timestamp} failed unit tests" />            
+		<tweet credentialsfile="twitterlogin" message="build '${version.num}-b${build.number}' of ${ant.project.name} initiated by ${user.name} at ${start.timestamp} failed unit tests" />            
     </target>
 
     <target name="jar" description="JARs Twant" depends="compile">
-		<echo>Jarring...</echo>
-        <jar destfile="${ant.project.name}.jar" basedir="${classes.dir}"/>
+		<echo message="Jarring: ${version.num}-b${build.number}" />
+		<delete file="MANIFEST.MF"/>
+		<manifest file="MANIFEST.MF">
+			<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		</manifest>
+        <jar destfile="${ant.project.name}.jar" basedir="${classes.dir}" manifest="MANIFEST.MF" />
     </target>
 	
 	
     <target name="broadcast-result" description="tweets about it" depends="unit-test">
     	<taskdef name="tweet" classname="twant.Tweet" classpath="${ant.project.name}.jar"/>
-		<tweet credentialsfile="twitterlogin" message="build of ${ant.project.name} initiated by ${user.name} at ${start.timestamp} was successful" />
+		<tweet credentialsfile="twitterlogin" message="build: '${version.num}-b${build.number}' of ${ant.project.name} initiated by ${user.name} at ${start.timestamp} was successful" />
 	</target>
 
 
